@@ -1,28 +1,33 @@
 # StudentApp 教育管理系统
 
-## 快速开始
+## 🚀 快速开始
 
-### 启动后端
+### 后端启动
 ```bash
 cd server
 javac -cp lib/h2.jar Server.java
 java -cp .:lib/h2.jar Server
 ```
+访问 http://localhost:3000
 
 ### API 接口
-- GET /api/health - 健康检查
-- GET /api/students - 学生列表
-- POST /api/students - 添加学生 {"name":"张三","age":10}
-- POST /api/auth/register - 注册 {"username":"user","password":"pass","name":"姓名"}
-- POST /api/auth/login - 登录 {"username":"user","password":"pass"}
+- `GET /api/students` - 学生列表
+- `POST /api/students` - 添加学生 `{"name":"张三","age":10}`
+- `GET /api/health` - 健康检查
 
-### 技术栈
-- 后端：Java + H2数据库
-- 前端：待开发（React）
+### 测试用户
+- 张三 (10岁)
+- 李四 (9岁)  
+- 王五 (11岁)
 
 ## 功能
-- [x] 用户注册/登录
-- [x] 学生管理（增删改查）
+- [x] 学生列表
+- [x] 添加学生
+- [ ] 学生详情
 - [ ] 健康记录
 - [ ] 学习记录
-- [ ] AI报告生成
+- [ ] AI报告
+
+## 技术
+- 后端: Java + H2数据库
+- 前端: HTML + JS
