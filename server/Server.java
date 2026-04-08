@@ -44,6 +44,11 @@ public class Server {
     static void onHealth(HttpExchange ex) throws IOException { send(ex, "{\"status\":\"ok\"}"); }
     
     static void onLogin(HttpExchange ex) throws IOException {
+        // 处理 CORS 预检
+        if ("OPTIONS".equals(ex.getRequestMethod())) {
+            sendCors(ex);
+            return;
+        }
         var body = readBody(ex);
         var username = parse(body, "username", "");
         var password = parse(body, "password", "");
@@ -56,7 +61,19 @@ public class Server {
         }
     }
     
+    static void sendCors(HttpExchange ex) throws IOException {
+        ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        ex.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        ex.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+        ex.sendResponseHeaders(204, -1);
+    }
+    
     static void onStudents(HttpExchange ex) throws IOException {
+        // 处理 CORS 预检
+        if ("OPTIONS".equals(ex.getRequestMethod())) {
+            sendCors(ex);
+            return;
+        }
         try {
             if ("GET".equals(ex.getRequestMethod())) {
                 var rs = stmt.executeQuery("SELECT * FROM students");
@@ -79,6 +96,11 @@ public class Server {
     }
     
     static void onStudentDetail(HttpExchange ex) throws IOException {
+        // 处理 CORS 预检
+        if ("OPTIONS".equals(ex.getRequestMethod())) {
+            sendCors(ex);
+            return;
+        }
         try {
             var path = ex.getRequestURI().getPath();
             var id = path.substring(path.lastIndexOf("/") + 1);
@@ -110,6 +132,11 @@ public class Server {
     }
     
     static void onAi(HttpExchange ex) throws IOException {
+        // 处理 CORS 预检
+        if ("OPTIONS".equals(ex.getRequestMethod())) {
+            sendCors(ex);
+            return;
+        }
         try {
             var body = readBody(ex);
             var studentId = parse(body, "studentId", "");
@@ -166,6 +193,8 @@ public class Server {
     static void send(HttpExchange ex, String json) throws IOException {
         ex.getResponseHeaders().set("Content-Type", "application/json");
         ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+        ex.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        ex.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
         var b = json.getBytes();
         ex.sendResponseHeaders(200, b.length);
         ex.getResponseBody().write(b);

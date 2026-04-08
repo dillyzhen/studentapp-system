@@ -2,67 +2,158 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StudentApp - 教育管理系统</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; min-height: 100vh; }
+        
+        /* 登录页面 */
+        .login-container { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%); }
+        .login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); width: 90%; max-width: 400px; }
+        .login-box h2 { text-align: center; margin-bottom: 24px; color: #333; }
+        .login-box .form-group { margin-bottom: 16px; }
+        .login-box label { display: block; margin-bottom: 6px; color: #666; font-size: 14px; }
+        .login-box input { width: 100%; padding: 12px; border: 1px solid #d9d9d9; border-radius: 6px; font-size: 14px; }
+        .login-box input:focus { border-color: #1890ff; outline: none; }
+        .login-btn { width: 100%; padding: 12px; background: #1890ff; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; margin-top: 8px; }
+        .login-btn:hover { background: #40a9ff; }
+        .demo-accounts { margin-top: 20px; padding: 12px; background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 6px; font-size: 12px; color: #52c41a; }
+        
+        /* 主页面 */
+        .app { display: none; }
+        .app.show { display: block; }
         .header { background: #1890ff; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
         .header h1 { font-size: 20px; }
-        .btn { background: white; color: #1890ff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
-        .container { max-width: 900px; margin: 20px auto; padding: 0 20px; }
+        .header .user-info { display: flex; align-items: center; gap: 12px; }
+        .header .logout-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
         .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        .section-title { font-size: 16px; color: #333; margin-bottom: 12px; padding-bottom: 8px; border-bottom: #f0f0f0; }
-        .student-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-        .student-card { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 6px; padding: 12px; cursor: pointer; transition: all 0.2s; }
-        .student-card:hover { border-color: #1890ff; background: #e6f7ff; }
-        .student-card h3 { color: #333; font-size: 15px; margin-bottom: 4px; }
-        .student-card p { color: #666; font-size: 13px; }
-        .btn-add { background: #1890ff; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; }
-        .form-group { margin-bottom: 12px; }
-        .form-group label { display: block; margin-bottom: 4px; font-size: 14px; color: #666; }
-        .form-group input { width: 100%; padding: 8px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; }
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
+        .section-title { font-size: 16px; color: #333; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; }
+        
+        .btn { background: #1890ff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: 500; }
+        .btn:hover { background: #40a9ff; }
+        .btn-secondary { background: #f5f5f5; color: #666; border: 1px solid #d9d9d9; }
+        .btn-secondary:hover { background: #e8e8e8; }
+        .btn-success { background: #52c41a; }
+        .btn-success:hover { background: #73d13d; }
+        
+        /* 学生列表 */
+        .student-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .student-card { background: #fafafa; border: 1px solid #e8e8e8; border-radius: 8px; padding: 16px; cursor: pointer; transition: all 0.2s; }
+        .student-card:hover { border-color: #1890ff; background: #e6f7ff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .student-card h3 { color: #333; font-size: 16px; margin-bottom: 8px; }
+        .student-card p { color: #666; font-size: 13px; margin-bottom: 4px; }
+        .student-card .actions { margin-top: 12px; display: flex; gap: 8px; }
+        .student-card .actions button { padding: 4px 12px; font-size: 12px; }
+        
+        /* 详情页面 */
+        .detail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-link { color: #1890ff; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 4px; }
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .info-item { background: #f5f5f5; padding: 12px 16px; border-radius: 6px; }
+        .info-item label { color: #999; font-size: 12px; display: block; margin-bottom: 4px; }
+        .info-item value { color: #333; font-size: 16px; font-weight: 500; }
+        
+        /* 记录表格 */
+        .record-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .record-table th, .record-table td { padding: 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        .record-table th { background: #fafafa; font-weight: 500; color: #666; font-size: 13px; }
+        .record-table td { color: #333; font-size: 14px; }
+        .record-table tr:hover { background: #f5f5f5; }
+        .empty-state { text-align: center; padding: 40px; color: #999; }
+        
+        /* AI 报告 */
+        .ai-report { background: #f6ffed; border: 1px solid #b7eb8f; border-radius: 8px; padding: 16px; margin-top: 16px; }
+        .ai-report h4 { color: #52c41a; margin-bottom: 8px; font-size: 14px; }
+        .ai-report p { color: #333; line-height: 1.6; white-space: pre-wrap; }
+        
+        /* 弹窗 */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; z-index: 1000; }
         .modal.show { display: flex; }
-        .modal-content { background: white; border-radius: 8px; padding: 24px; width: 90%; max-width: 420px; }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-        .modal-header h2 { font-size: 16px; }
+        .modal-content { background: white; border-radius: 8px; padding: 24px; width: 90%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 18px; color: #333; }
         .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: #999; }
-        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; }
-        .btn-secondary { background: #f5f5f5; color: #666; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; }
-        .empty { text-align: center; padding: 40px; color: #999; }
-        .back-link { color: #1890ff; cursor: pointer; font-size: 14px; }
-        .info-row { display: flex; padding: 8px 0; border-bottom: 1px solid #f0f0f0; }
-        .info-row:last-child { border: none; }
-        .info-label { width: 80px; color: #999; font-size: 13px; }
-        .info-value { flex: 1; color: #333; font-size: 14px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 14px; color: #333; font-weight: 500; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #d9d9d9; border-radius: 4px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #1890ff; outline: none; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+        .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+        
+        /* 加载动画 */
+        .loading { display: inline-block; width: 20px; height: 20px; border: 2px solid #f3f3f3; border-top: 2px solid #1890ff; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* 标签 */
+        .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+        .tag-teacher { background: #e6f7ff; color: #1890ff; }
+        .tag-admin { background: #fff7e6; color: #fa8c16; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>🎓 StudentApp</h1>
-        <button class="btn" onclick="showAddModal()">+ 添加学生</button>
+    <!-- 登录页面 -->
+    <div class="login-container" id="loginPage">
+        <div class="login-box">
+            <h2>🎓 StudentApp 登录</h2>
+            <div class="form-group">
+                <label>用户名</label>
+                <input type="text" id="loginUsername" placeholder="请输入用户名">
+            </div>
+            <div class="form-group">
+                <label>密码</label>
+                <input type="password" id="loginPassword" placeholder="请输入密码">
+            </div>
+            <button class="login-btn" onclick="login()">登录</button>
+            <div class="demo-accounts">
+                <strong>演示账号：</strong><br>
+                老师：teacher1 / pass123<br>
+                管理员：admin / admin123
+            </div>
+        </div>
     </div>
-    
-    <div class="container">
-        <!-- 学生列表 -->
-        <div class="card" id="listView">
-            <div class="section-title">学生列表 (<span id="studentCount">0</span>人)</div>
-            <div class="student-list" id="studentList">
-                <div class="empty">加载中...</div>
+
+    <!-- 主应用 -->
+    <div class="app" id="app">
+        <div class="header">
+            <h1>🎓 StudentApp 教育管理系统</h1>
+            <div class="user-info">
+                <span id="userName"></span>
+                <span class="tag" id="userRole"></span>
+                <button class="logout-btn" onclick="logout()">退出</button>
             </div>
         </div>
         
-        <!-- 学生详情 -->
-        <div class="card" id="detailView" style="display:none;">
-            <div class="back-link" onclick="showList()">← 返回列表</div>
-            <div style="margin-top:12px;" id="studentDetail"></div>
+        <div class="container">
+            <!-- 学生列表 -->
+            <div class="card" id="listView">
+                <div class="section-title">
+                    <span>学生列表 (<span id="studentCount">0</span>人)</span>
+                    <button class="btn" onclick="showAddModal()">+ 添加学生</button>
+                </div>
+                <div class="student-list" id="studentList">
+                    <div class="empty-state">加载中...</div>
+                </div>
+            </div>
+            
+            <!-- 学生详情 -->
+            <div class="card" id="detailView" style="display:none;">
+                <div class="detail-header">
+                    <span class="back-link" onclick="showList()">← 返回列表</span>
+                    <button class="btn" onclick="showAiReport()">🤖 生成AI报告</button>
+                </div>
+                <div id="studentDetail"></div>
+            </div>
         </div>
     </div>
     
-    <!-- 添加弹窗 -->
+    <!-- 添加学生弹窗 -->
     <div class="modal" id="addModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -70,68 +161,300 @@
                 <button class="modal-close" onclick="hideAddModal()">×</button>
             </div>
             <div class="form-group">
-                <label>姓名</label>
+                <label>姓名 *</label>
                 <input type="text" id="studentName" placeholder="请输入学生姓名">
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label>年龄</label>
-                    <input type="number" id="studentAge" placeholder="年龄" value="10">
+                    <label>年龄 *</label>
+                    <input type="number" id="studentAge" placeholder="年龄" value="10" min="3" max="20">
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn-secondary" onclick="hideAddModal()">取消</button>
-                <button class="btn-add" onclick="addStudent()">保存</button>
+                <button class="btn btn-secondary" onclick="hideAddModal()">取消</button>
+                <button class="btn" onclick="addStudent()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI报告弹窗 -->
+    <div class="modal" id="aiModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>生成AI报告</h2>
+                <button class="modal-close" onclick="hideAiModal()">×</button>
+            </div>
+            <div class="form-group">
+                <label>报告类型</label>
+                <select id="reportType">
+                    <option value="health">健康分析报告</option>
+                    <option value="learning">学习分析报告</option>
+                </select>
+            </div>
+            <div id="aiReportResult"></div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="hideAiModal()">关闭</button>
+                <button class="btn" onclick="generateAiReport()">生成报告</button>
             </div>
         </div>
     </div>
     
     <script>
-        const API = window.location.origin + '/api';
+        const API = '/api'; // Nginx 统一入口
+        let currentUser = null;
+        let currentStudentId = null;
         
-        function loadStudents() {
-            fetch(API + '/students').then(r => r.json()).then(data => {
+        // 检查登录状态
+        function checkAuth() {
+            const user = localStorage.getItem('user');
+            if (user) {
+                currentUser = JSON.parse(user);
+                showApp();
+            } else {
+                showLogin();
+            }
+        }
+        
+        // 登录
+        async function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!username || !password) {
+                alert('请输入用户名和密码');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API + '/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    currentUser = data.user;
+                    localStorage.setItem('user', JSON.stringify(currentUser));
+                    showApp();
+                } else {
+                    alert('登录失败：' + (data.error || '用户名或密码错误'));
+                }
+            } catch (e) {
+                alert('登录出错：' + e.message);
+            }
+        }
+        
+        // 退出
+        function logout() {
+            localStorage.removeItem('user');
+            currentUser = null;
+            showLogin();
+        }
+        
+        // 显示登录页
+        function showLogin() {
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('app').classList.remove('show');
+        }
+        
+        // 显示应用
+        function showApp() {
+            document.getElementById('loginPage').style.display = 'none';
+            document.getElementById('app').classList.add('show');
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '管理员' : '老师';
+            document.getElementById('userRole').className = 'tag tag-' + currentUser.role;
+            loadStudents();
+        }
+        
+        // 加载学生列表
+        async function loadStudents() {
+            try {
+                const res = await fetch(API + '/students');
+                const data = await res.json();
                 document.getElementById('studentCount').textContent = data.length;
+                
                 if (data.length === 0) {
-                    document.getElementById('studentList').innerHTML = '<div class="empty">暂无学生，点击右上角添加</div>';
+                    document.getElementById('studentList').innerHTML = '<div class="empty-state">暂无学生，点击右上角添加</div>';
                     return;
                 }
+                
                 document.getElementById('studentList').innerHTML = data.map(s => 
-                    '<div class="student-card" onclick="viewStudent(\'' + s.id + '\')"><h3>' + s.name + '</h3><p>年龄: ' + s.age + '岁</p></div>'
+                    `<div class="student-card" onclick="viewStudent('${s.id}')">
+                        <h3>${s.name}</h3>
+                        <p>年龄: ${s.age}岁</p>
+                        <p>ID: ${s.id}</p>
+                        <div class="actions">
+                            <button class="btn" style="padding: 4px 12px; font-size: 12px;" onclick="event.stopPropagation(); viewStudent('${s.id}')">查看详情</button>
+                        </div>
+                    </div>`
                 ).join('');
-            });
+            } catch (e) {
+                document.getElementById('studentList').innerHTML = '<div class="empty-state">加载失败：' + e.message + '</div>';
+            }
         }
         
-        function viewStudent(id) {
-            document.getElementById('listView').style.display = 'none';
-            document.getElementById('detailView').style.display = 'block';
-            document.getElementById('detailView').innerHTML = '<div class="back-link" onclick="showList()">← 返回列表</div><div style="margin-top:12px;"><h2>学生ID: ' + id + '</h2><p style="color:#999;margin-top:8px;">详情功能开发中...</p></div>';
+        // 查看学生详情
+        async function viewStudent(id) {
+            currentStudentId = id;
+            try {
+                const res = await fetch(API + '/students/' + id);
+                const data = await res.json();
+                
+                if (data.error) {
+                    alert('获取详情失败：' + data.error);
+                    return;
+                }
+                
+                document.getElementById('listView').style.display = 'none';
+                document.getElementById('detailView').style.display = 'block';
+                
+                let html = `
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>姓名</label>
+                            <value>${data.name}</value>
+                        </div>
+                        <div class="info-item">
+                            <label>年龄</label>
+                            <value>${data.age}岁</value>
+                        </div>
+                        <div class="info-item">
+                            <label>学生ID</label>
+                            <value>${data.id}</value>
+                        </div>
+                    </div>
+                `;
+                
+                // 健康记录
+                html += '<div class="card" style="margin-top: 16px;"><h3 style="margin-bottom: 12px;">🏥 健康记录</h3>';
+                if (data.healthRecords && data.healthRecords.length > 0) {
+                    html += '<table class="record-table"><thead><tr><th>身高(cm)</th><th>体重(kg)</th><th>视力</th><th>备注</th></tr></thead><tbody>';
+                    data.healthRecords.forEach(r => {
+                        html += `<tr><td>${r.height || '-'}</td><td>${r.weight || '-'}</td><td>${r.vision || '-'}</td><td>${r.notes || '-'}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                } else {
+                    html += '<div class="empty-state">暂无健康记录</div>';
+                }
+                html += '</div>';
+                
+                // 学习记录
+                html += '<div class="card" style="margin-top: 16px;"><h3 style="margin-bottom: 12px;">📚 学习记录</h3>';
+                if (data.learningRecords && data.learningRecords.length > 0) {
+                    html += '<table class="record-table"><thead><tr><th>科目</th><th>成绩</th><th>备注</th></tr></thead><tbody>';
+                    data.learningRecords.forEach(r => {
+                        html += `<tr><td>${r.subject || '-'}</td><td>${r.score || '-'}</td><td>${r.notes || '-'}</td></tr>`;
+                    });
+                    html += '</tbody></table>';
+                } else {
+                    html += '<div class="empty-state">暂无学习记录</div>';
+                }
+                html += '</div>';
+                
+                document.getElementById('studentDetail').innerHTML = html;
+            } catch (e) {
+                alert('获取详情失败：' + e.message);
+            }
         }
         
+        // 返回列表
         function showList() {
             document.getElementById('listView').style.display = 'block';
             document.getElementById('detailView').style.display = 'none';
+            currentStudentId = null;
         }
         
-        function showAddModal() { document.getElementById('addModal').classList.add('show'); }
-        function hideAddModal() { document.getElementById('addModal').classList.remove('show'); document.getElementById('studentName').value = ''; }
+        // 显示添加弹窗
+        function showAddModal() { 
+            document.getElementById('addModal').classList.add('show'); 
+        }
         
-        function addStudent() {
-            var name = document.getElementById('studentName').value.trim();
-            var age = parseInt(document.getElementById('studentAge').value) || 10;
-            if (!name) return alert('请输入姓名');
+        // 隐藏添加弹窗
+        function hideAddModal() { 
+            document.getElementById('addModal').classList.remove('show'); 
+            document.getElementById('studentName').value = ''; 
+        }
+        
+        // 添加学生
+        async function addStudent() {
+            const name = document.getElementById('studentName').value.trim();
+            const age = parseInt(document.getElementById('studentAge').value) || 10;
             
-            fetch(API + '/students', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, age })
-            }).then(r => r.json()).then(d => {
-                if (d.success) { hideAddModal(); loadStudents(); }
-                else alert('添加失败');
-            });
+            if (!name) {
+                alert('请输入姓名');
+                return;
+            }
+            
+            try {
+                const res = await fetch(API + '/students', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, age })
+                });
+                const data = await res.json();
+                
+                if (data.success) { 
+                    hideAddModal(); 
+                    loadStudents();
+                    alert('添加成功！');
+                } else { 
+                    alert('添加失败：' + (data.error || '未知错误')); 
+                }
+            } catch (e) {
+                alert('添加出错：' + e.message);
+            }
         }
         
-        loadStudents();
+        // 显示AI报告弹窗
+        function showAiReport() {
+            if (!currentStudentId) {
+                alert('请先选择学生');
+                return;
+            }
+            document.getElementById('aiModal').classList.add('show');
+            document.getElementById('aiReportResult').innerHTML = '';
+        }
+        
+        // 隐藏AI报告弹窗
+        function hideAiModal() {
+            document.getElementById('aiModal').classList.remove('show');
+        }
+        
+        // 生成AI报告
+        async function generateAiReport() {
+            if (!currentStudentId) return;
+            
+            const type = document.getElementById('reportType').value;
+            const resultDiv = document.getElementById('aiReportResult');
+            resultDiv.innerHTML = '<div class="loading"></div> 正在生成报告...';
+            
+            try {
+                const res = await fetch(API + '/ai/generate-report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ studentId: currentStudentId, type })
+                });
+                const data = await res.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `<div class="ai-report"><h4>${type === 'health' ? '🏥 健康分析报告' : '📚 学习分析报告'}</h4><p>${data.content.replace(/\\n/g, '<br>')}</p></div>`;
+                } else {
+                    resultDiv.innerHTML = '<div style="color: red;">生成失败：' + (data.error || '未知错误') + '</div>';
+                }
+            } catch (e) {
+                resultDiv.innerHTML = '<div style="color: red;">生成出错：' + e.message + '</div>';
+            }
+        }
+        
+        // 页面加载时检查登录状态
+        checkAuth();
+        
+        // 回车键登录
+        document.getElementById('loginPassword')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') login();
+        });
     </script>
 </body>
 </html>
