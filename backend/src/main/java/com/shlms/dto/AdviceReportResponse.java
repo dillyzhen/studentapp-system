@@ -1,0 +1,28 @@
+package com.shlms.dto;
+
+import com.shlms.enums.ReportStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AdviceReportResponse {
+
+    private String id;
+    private String studentId;
+    private String studentName;
+    private String title;
+    private String content;
+    private ReportStatus status;
+    private String statusDisplayName;
+    private String auditorName;
+    private LocalDateTime auditedAt;
+    private LocalDateTime distributedAt;
+    private LocalDateTime createdAt;
+}

@@ -1,1 +1,8 @@
-data/
+# 忽略的文件
+apache-maven-3.9.6/
+maven.zip
+backend/target/
+server/data/
+*.db
+*.log
+nohup.out

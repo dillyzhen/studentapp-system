@@ -129,7 +129,7 @@ spring:
       path: /h2-console
 
 jwt:
-  secret: dev-secret-key-not-for-production-use-only-in-development
+  secret: cK3ztAayIAmeVr44qV6Mzd06q7a2L/7sv/MAw94YWDHLyPZeT1qLB9nOSu4imnMoOJAk4u4TyMkrJWfz35isaw==
 
 logging:
   level:
