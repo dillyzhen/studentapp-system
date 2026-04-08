@@ -30,7 +30,7 @@ public class Server {
         users.put("teacher1", Map.of("id", "t1", "username", "teacher1", "password", "pass123", "name", "张老师", "role", "teacher"));
         users.put("admin", Map.of("id", "a1", "username", "admin", "password", "admin123", "name", "管理员", "role", "admin"));
         
-        HttpServer srv = HttpServer.create(new InetSocketAddress(3000), 0);
+        HttpServer srv = HttpServer.create(new InetSocketAddress("0.0.0.0", 3000), 0);
         srv.createContext("/api/health", Server::onHealth);
         srv.createContext("/api/auth/login", Server::onLogin);
         srv.createContext("/api/students", Server::onStudents);
@@ -149,12 +149,15 @@ public class Server {
     
     static String parse(String s, String k, String def) {
         try {
-            int i = s.indexOf("\"" + k + "\"");
-            if (i < 0) return def;
-            int colon = s.indexOf(":", i);
-            int q1 = s.indexOf("\"", colon);
-            int q2 = s.indexOf("\"", q1 + 1);
-            return s.substring(q1 + 1, q2);
+            // Handle both "key": "value" and "key": value formats
+            var pattern = "\"" + k + "\"\\s*:\\s*";
+            var regex = pattern + "(?:\"([^\"]*)\"|(\\d+))";
+            var m = java.util.regex.Pattern.compile(regex).matcher(s);
+            if (m.find()) {
+                if (m.group(1) != null) return m.group(1);
+                if (m.group(2) != null) return m.group(2);
+            }
+            return def;
         } catch (Exception e) { return def; }
     }
     
